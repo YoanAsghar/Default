@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.IO;
 
 namespace Default.Config
 {
@@ -9,6 +8,7 @@ namespace Default.Config
         public string Email { get; set; } = string.Empty;
 
 
+        //Route for the configuration
         private static readonly string ConfigPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "DefaultTool",
@@ -19,7 +19,7 @@ namespace Default.Config
         {
             if (!File.Exists(ConfigPath))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath));
+                Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath)!);
                 string json = JsonSerializer.Serialize(new UserConfiguration(), new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(ConfigPath, json);
                 return new UserConfiguration();
@@ -31,7 +31,7 @@ namespace Default.Config
             return RetrievedUserData;
         }
 
-        public static void EditUserConfig(string username, string email)
+        public static void EditUserConfig(string? username, string? email)
         {
             var UserConfig = RetrieveUserConfig();
             //In case the user only passes an username, it edits the username
