@@ -14,8 +14,7 @@ namespace Default.Models
     {
         public int Id { get; set; }
         public string? Name { get; set; } = string.Empty;
-        public string? Description { get; set; } = string.Empty;
-        DateTime CreationDate { get; set; } = DateTime.Now;
+        public DateTime CreationDate { get; set; } = DateTime.Now;
         public DateOnly? DueDate { get; set; }
         public TasksPriority Priority { get; set; }
 
@@ -49,6 +48,12 @@ namespace Default.Models
 
             var json = JsonSerializer.Serialize(UserTasksRetrieved, new JsonSerializerOptions { WriteIndented = true });
 
+            File.WriteAllText(TasksPath, json);
+        }
+
+        public static void SaveTasksLocally(List<UserTasks> tasks)
+        {
+            var json = JsonSerializer.Serialize(tasks, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(TasksPath, json);
         }
     }
