@@ -19,41 +19,50 @@ namespace Default.Commands
         public static Command AddTaskCommand()
         {
 
-            //Creates add command
-            var taskAddCommand = new Command("add", "Creates new task");
-
-            //Creates the arguments for the add command
-            var NameOption = new Option<string>("--name") { Required = true };
-            var DescriptionOption = new Option<string>("--description");
-            var DueDate = new Option<DateOnly>("--due-date");
-            var Priority = new Option<TasksPriority>("--priority") { DefaultValueFactory = _ => TasksPriority.None };
-
-            //Add the arguments to the command
-            taskAddCommand.Options.Add(NameOption);
-            taskAddCommand.Options.Add(DescriptionOption);
-            taskAddCommand.Options.Add(DueDate);
-            taskAddCommand.Options.Add(Priority);
-
-            //Logic of the command
-            taskAddCommand.SetAction((ParseResult) =>
+            try
             {
-                string? name = ParseResult.GetValue(NameOption);
-                string? description = ParseResult.GetValue(DescriptionOption);
-                DateOnly? dueDate = ParseResult.GetValue(DueDate);
-                TasksPriority priority = ParseResult.GetValue(Priority);
 
-                var TaskToSave = new UserTasks()
-                {
-                    Name = name,
-                    DueDate = dueDate,
-                    Priority = priority
-                };
+                //Creates add command
+                var taskAddCommand = new Command("add", "Creates new task");
 
-                UserTasks.SaveTasksLocally(TaskToSave);
-                Console.WriteLine($"Created task: '{TaskToSave.Name}'");
-            });
+                //Creates the arguments for the add command
+                var NameOption = new Option<string>("--name") { Required = true };
+                var DescriptionOption = new Option<string>("--description");
+                var DueDate = new Option<DateOnly>("--due-date");
+                var Priority = new Option<TasksPriority>("--priority") { DefaultValueFactory = _ => TasksPriority.None };
 
-            return taskAddCommand;
+                //Add the arguments to the command
+                taskAddCommand.Options.Add(NameOption);
+                taskAddCommand.Options.Add(DescriptionOption);
+                taskAddCommand.Options.Add(DueDate);
+                taskAddCommand.Options.Add(Priority);
+
+                //Logic of the command
+                taskAddCommand.SetAction((ParseResult) =>
+                    {
+                        string? name = ParseResult.GetValue(NameOption);
+                        string? description = ParseResult.GetValue(DescriptionOption);
+                        DateOnly? dueDate = ParseResult.GetValue(DueDate);
+                        TasksPriority priority = ParseResult.GetValue(Priority);
+
+                        var TaskToSave = new UserTasks()
+                        {
+                            Name = name,
+                            DueDate = dueDate,
+                            Priority = priority
+                        };
+
+                        UserTasks.SaveTasksLocally(TaskToSave);
+                        Console.WriteLine($"Created task: '{TaskToSave.Name}'");
+                    });
+
+                return taskAddCommand;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         public static void PrintConsoleField(string label, object? value)
@@ -137,30 +146,39 @@ namespace Default.Commands
 
         public static Command DeleteTaskCommand()
         {
-            var DeleteTaskCommand = new Command("delete", "Deletes a task by id");
-
-            //Creates argument for the id of the task to delete
-            var TaskToDelete = new Argument<int>("taskId");
-
-            DeleteTaskCommand.Arguments.Add(TaskToDelete);
-
-            DeleteTaskCommand.SetAction((ParseResult) =>
+            try
             {
-                var TaskId = ParseResult.GetValue(TaskToDelete);
-                var AllTasks = UserTasks.RetrieveTasks();
-                UserTasks? TaskToDeleteFromList = AllTasks.FirstOrDefault(t => t.Id == TaskId);
-                if (TaskToDeleteFromList == null)
-                {
-                    Console.WriteLine("Task doesn't exist");
-                    return;
-                }
-                AllTasks.Remove(TaskToDeleteFromList);
-                UserTasks.SaveTasksLocally(AllTasks);
 
-                Console.WriteLine($"Deleted task: {TaskToDeleteFromList.Name}");
-            });
+                var DeleteTaskCommand = new Command("delete", "Deletes a task by id");
 
-            return DeleteTaskCommand;
+                //Creates argument for the id of the task to delete
+                var TaskToDelete = new Argument<int>("taskId");
+
+                DeleteTaskCommand.Arguments.Add(TaskToDelete);
+
+                DeleteTaskCommand.SetAction((ParseResult) =>
+                    {
+                        var TaskId = ParseResult.GetValue(TaskToDelete);
+                        var AllTasks = UserTasks.RetrieveTasks();
+                        UserTasks? TaskToDeleteFromList = AllTasks.FirstOrDefault(t => t.Id == TaskId);
+                        if (TaskToDeleteFromList == null)
+                        {
+                            Console.WriteLine("Task doesn't exist");
+                            return;
+                        }
+                        AllTasks.Remove(TaskToDeleteFromList);
+                        UserTasks.SaveTasksLocally(AllTasks);
+
+                        Console.WriteLine($"Deleted task {TaskToDeleteFromList.Name}");
+                    });
+
+                return DeleteTaskCommand;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
     }
 }
