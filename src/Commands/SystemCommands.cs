@@ -6,10 +6,15 @@ namespace Default.Commands
 {
     public class SystemCommands
     {
-        public static Command AddToRoot(RootCommand root)
+
+        public static void AddToRoot(RootCommand root)
+        {
+            root.Subcommands.Add(SysinfoCommand());
+            root.Subcommands.Add(GeneratePasswodCommand());
+        }
+        public static Command SysinfoCommand()
         {
             var SystemCommand = new Command("sysinfo", "System related options");
-            root.Subcommands.Add(SystemCommand);
 
             SystemCommand.SetAction((ParseResult) =>
             {
@@ -108,6 +113,62 @@ namespace Default.Commands
             // SystemCommand.Add();
 
             return SystemCommand;
+        }
+
+        public static Command GeneratePasswodCommand()
+        {
+            var GeneratePassword = new Command("password");
+
+            //Arguments
+            var Length = new Argument<int>("length");
+            var IncludeCaps = new Option<bool>("--caps");
+            var IncludeLows = new Option<bool>("--lows");
+            var IncludeNums = new Option<bool>("--nums");
+            var IncludeSymbols = new Option<bool>("--symbols");
+
+            //Add arguments
+            GeneratePassword.Arguments.Add(Length);
+            GeneratePassword.Options.Add(IncludeLows);
+            GeneratePassword.Options.Add(IncludeCaps);
+            GeneratePassword.Options.Add(IncludeNums);
+            GeneratePassword.Options.Add(IncludeSymbols);
+
+            GeneratePassword.SetAction((ParseResult) =>
+            {
+                int lenght = ParseResult.GetValue(Length);
+                bool includeLows = ParseResult.GetValue(IncludeLows);
+                bool includeCaps = ParseResult.GetValue(IncludeCaps);
+                bool includeNums = ParseResult.GetValue(IncludeNums);
+                bool includeSymbols = ParseResult.GetValue(IncludeSymbols);
+
+                const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+                const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const string numbers = "0123456789";
+                const string symbols = "!@#$%^&*()-_+=[]{}|;:,.?/~";
+
+                string CharactersPool = "";
+                if (includeLows == false && includeCaps == false && includeNums == false && includeSymbols == false)
+                {
+                    includeLows = true;
+                    includeCaps = true;
+                    includeNums = true;
+                    includeSymbols = true;
+                }
+                if (includeLows) CharactersPool += lowercase;
+                if (includeCaps) CharactersPool += uppercase;
+                if (includeNums) CharactersPool += numbers;
+                if (includeSymbols) CharactersPool += symbols;
+
+                var random = new Random();
+                string RandomPassword = new string(
+                    Enumerable.Range(0, lenght)
+                    .Select(_ => CharactersPool[random.Next(CharactersPool.Length)])
+                    .ToArray()
+                    );
+                Console.WriteLine(RandomPassword);
+            });
+
+            return GeneratePassword;
         }
     }
 }
