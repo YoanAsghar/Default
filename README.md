@@ -60,3 +60,10 @@ Default qrcode "https://github.com/your-repo"
 - `src/Commands/`: Modular command definitions (Tasks, Utilities, Local).
 - `src/Models/`: Data structures and local persistence logic.
 - `Config/`: Application-wide configuration management.
+
+##  Execution
+
+
+https://github.com/user-attachments/assets/596365d4-83ff-4b8b-9706-4ecbc0f9f05d
+
+
