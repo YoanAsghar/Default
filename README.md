@@ -3,7 +3,7 @@
 **Default** is a versatile C# command-line interface (CLI) application designed to consolidate various utility tools into a single, efficient package. Built with .NET 10 and `System.CommandLine`, it provides an extensible architecture for managing tasks, system information, and utility functions.
 
 > [!NOTE]  
-> This project is currently **in progress**. More commands and features are being added regularly.
+> This project is currently **in progress**. More commands and features are being added regularly, with the first release i will include a guide featuring all commands and options.
 
 ## 🚀 Features
 
