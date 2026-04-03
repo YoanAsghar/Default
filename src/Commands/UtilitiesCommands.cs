@@ -1,16 +1,19 @@
+using System.IO;
+using QRCoder;
 using System.CommandLine;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Default.Commands
 {
-    public class SystemCommands
+    public class UtilitiesCommands
     {
 
         public static void AddToRoot(RootCommand root)
         {
             root.Subcommands.Add(SysinfoCommand());
             root.Subcommands.Add(GeneratePasswodCommand());
+            root.Subcommands.Add(GenerateQrCommand());
         }
         public static Command SysinfoCommand()
         {
@@ -169,6 +172,33 @@ namespace Default.Commands
             });
 
             return GeneratePassword;
+        }
+
+        public static Command GenerateQrCommand()
+        {
+            var GenerateQrCommand = new Command("qrcode", "Creates a new qr referencing the text that you introduce");
+            var TextoToConvertInQr = new Argument<string>("text");
+            GenerateQrCommand.Arguments.Add(TextoToConvertInQr);
+            GenerateQrCommand.SetAction((ParseResult) =>
+            {
+                string PathToSaveQr = Path.Combine(Environment.CurrentDirectory, "qrcode.png");
+                using var qrGenerator = new QRCodeGenerator();
+                var TextToQr = ParseResult.GetValue(TextoToConvertInQr);
+                if (string.IsNullOrEmpty(TextToQr))
+                {
+                    Console.WriteLine("Provide a text to convert");
+                    return;
+                }
+
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(TextToQr, QRCodeGenerator.ECCLevel.Q);
+                using var pngRenderer = new PngByteQRCode(qrCodeData);
+                byte[] qrCodeBytes = pngRenderer.GetGraphic(20); //
+                File.WriteAllBytes(PathToSaveQr, qrCodeBytes);
+                Console.WriteLine($"QR saved at: {PathToSaveQr}");
+            });
+
+
+            return GenerateQrCommand;
         }
     }
 }

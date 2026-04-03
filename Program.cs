@@ -20,7 +20,7 @@ namespace Default
             //Map all the commands to the main root
             TasksCommands.AddToRoot(RootCommand);
             Local.AddToRoot(RootCommand);
-            SystemCommands.AddToRoot(RootCommand);
+            UtilitiesCommands.AddToRoot(RootCommand);
 
 
             RootCommand.Parse(args).Invoke();
